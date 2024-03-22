@@ -1,11 +1,13 @@
 //const express = require("express");
 import express from "express";
-import flimRoutes from "./routes/flim.js";
+import cors from "cors";
+
+import customerRoutes from "./routes/customer.js";
 
 import sequelize from "./utils/db.js";
 
 const app = express();
-const port = 3000;
+const port = 8000;
 
 sequelize
   .sync()
@@ -14,8 +16,11 @@ sequelize
   })
   .catch((err) => console.log("Error in Sequelize"));
 
+// middlewares
+app.use(cors());
+
 //Router Middleware
-app.use("/api", flimRoutes);
+app.use("/api", customerRoutes);
 
 app.get("/ping", (req, res) => {
   res.send("Hi, Greetings from Sakila backend!");

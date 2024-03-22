@@ -4,7 +4,7 @@ import Customer from "../models/customer.js";
 
 const router = express.Router();
 
-router.get("/flims", async (req, res) => {
+router.get("/customer", async (req, res) => {
   const customers = await Customer.findAll();
   res.json(customers);
 });
