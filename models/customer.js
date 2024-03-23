@@ -28,7 +28,7 @@ const Customer = sequelize.define(
   },
   {
     freezeTableName: true, // Disable table pluralization
-    timestamps: false,
+    timestamps: false, // Assuming the timestamps are managed by MySQL itself
   }
 );
 
