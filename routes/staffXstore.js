@@ -1,7 +1,7 @@
 import express from "express";
 
 import { Address, City, Country } from "../models/address.js";
-import { Staff, Store } from "../models/staffXstore.js";
+import { Staff, Store } from "../models/staffxstore.js";
 
 const router = express.Router();
 

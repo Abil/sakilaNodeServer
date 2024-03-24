@@ -47,8 +47,8 @@ const City = sequelize.define(
         model: Country,
         key: "country_id",
       },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
+      // onUpdate: "CASCADE",  //TODO: This maybe redundant so need to remove
+      // onDelete: "RESTRICT",
     },
     last_update: {
       type: DataTypes.DATE,
@@ -67,7 +67,7 @@ const City = sequelize.define(
 City.belongsTo(Country, {
   foreignKey: "country_id",
   targetKey: "country_id",
-  onDelete: "RESTRICT",
+  onDelete: "RESTRICT", // TODO: I think this must be changed to CASCADE
   onUpdate: "CASCADE",
 });
 
@@ -99,8 +99,8 @@ const Address = sequelize.define(
         model: City,
         key: "city_id",
       },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
+      // onUpdate: "CASCADE",
+      // onDelete: "RESTRICT", // TODO: This may be redundant so need to remove
     },
     postal_code: {
       type: DataTypes.STRING(10),

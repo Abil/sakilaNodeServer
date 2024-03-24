@@ -5,7 +5,7 @@ import { Address } from "./address.js";
 
 // Define the Staff model
 const Staff = sequelize.define(
-  "Staff",
+  "staff",
   {
     staff_id: {
       type: DataTypes.TINYINT.UNSIGNED,
@@ -58,7 +58,7 @@ const Staff = sequelize.define(
 
 // Define the Store model
 const Store = sequelize.define(
-  "Store",
+  "store",
   {
     store_id: {
       type: DataTypes.TINYINT.UNSIGNED,
@@ -88,8 +88,8 @@ const Store = sequelize.define(
 
 // Define associations
 Staff.belongsTo(Address, { foreignKey: "address_id" });
-Staff.belongsTo(Store, { foreignKey: "store_id" });
+Staff.belongsTo(Store, { foreignKey: "store_id" }); //TODO: If sotre is deleted, staff can be deleted (onDelete: 'CASCADE')
 Store.belongsTo(Address, { foreignKey: "address_id" });
-Store.belongsTo(Staff, { foreignKey: "manager_staff_id" });
+Store.belongsTo(Staff, { foreignKey: "manager_staff_id" }); //TODO: If satff is deleted, store need not be deleted (onDelete: 'SET NULL')
 
 export { Staff, Store };
