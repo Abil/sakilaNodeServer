@@ -1,21 +1,17 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../utils/db.js";
 
-// Define the Actor model
-const Actor = sequelize.define(
-  "actor",
+// Define the Category model
+const Category = sequelize.define(
+  "category",
   {
-    actor_id: {
-      type: DataTypes.SMALLINT.UNSIGNED,
+    category_id: {
+      type: DataTypes.TINYINT.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
     },
-    first_name: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    last_name: {
-      type: DataTypes.STRING(45),
+    name: {
+      type: DataTypes.STRING(25),
       allowNull: false,
     },
     last_update: {
@@ -27,10 +23,10 @@ const Actor = sequelize.define(
     },
   },
   {
-    tableName: "actor",
+    tableName: "category",
     timestamps: false,
   }
 );
 
 //Exports
-export default Actor;
+export default Category;

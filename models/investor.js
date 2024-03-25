@@ -1,11 +1,11 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../utils/db.js";
 
-// Define the Actor model
-const Actor = sequelize.define(
-  "actor",
+// Define the Investor model
+const Investor = sequelize.define(
+  "investor",
   {
-    actor_id: {
+    investor_id: {
       type: DataTypes.SMALLINT.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
@@ -18,19 +18,16 @@ const Actor = sequelize.define(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    last_update: {
-      type: DataTypes.DATE,
+    company_name: {
+      type: DataTypes.STRING(45),
       allowNull: false,
-      defaultValue: Sequelize.literal(
-        "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-      ),
     },
   },
   {
-    tableName: "actor",
+    tableName: "investor",
     timestamps: false,
   }
 );
 
 //Exports
-export default Actor;
+export default Investor;

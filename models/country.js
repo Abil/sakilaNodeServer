@@ -1,21 +1,19 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../utils/db.js";
 
-// Define the Actor model
-const Actor = sequelize.define(
-  "actor",
+//import City from "./city.js";
+
+// Define the Country model
+const Country = sequelize.define(
+  "country",
   {
-    actor_id: {
+    country_id: {
       type: DataTypes.SMALLINT.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
     },
-    first_name: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    last_name: {
-      type: DataTypes.STRING(45),
+    country: {
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     last_update: {
@@ -27,10 +25,15 @@ const Actor = sequelize.define(
     },
   },
   {
-    tableName: "actor",
+    tableName: "country",
     timestamps: false,
   }
 );
 
+/*Associations*/
+
+//A country entry can be associated with multiple city entries (one to many)
+// Country.hasMany(City, { foreignKey: "country_id" });
+
 //Exports
-export default Actor;
+export default Country;
