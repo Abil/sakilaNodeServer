@@ -9,6 +9,8 @@ import countryRoutes from "./routes/country.js";
 import cityRoutes from "./routes/city.js";
 import investorRoutes from "./routes/investor.js";
 import languageRoutes from "./routes/language.js";
+import staffRoutes from "./routes/staff.js";
+import storeRoutes from "./routes/store.js";
 
 import sequelize from "./utils/db.js";
 import { associateModels } from "./models/associations.js";
@@ -44,6 +46,8 @@ const initializeApp = async () => {
   app.use("/api/city", cityRoutes);
   app.use("/api/investor", investorRoutes);
   app.use("/api/language", languageRoutes);
+  app.use("/api/staff", staffRoutes);
+  app.use("/api/store", storeRoutes);
 
   // Ping Test
   app.get("/ping", (req, res) => {

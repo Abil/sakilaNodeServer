@@ -1,10 +1,7 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../utils/db.js";
 
-// import Country from "./country.js";
-// import Address from "./address.js";
-
-// Define the Language model
+// Define the City model
 const City = sequelize.define(
   "city",
   {
@@ -34,13 +31,6 @@ const City = sequelize.define(
     timestamps: false,
   }
 );
-
-/*Associations*/
-
-//A city entry can be associated with multiple address entries (one to many)
-//City.hasMany(Address, { foreignKey: "city_id" });
-//Every city entry has only one country entry associated (one to one)
-//City.belongsTo(Country, { foreignKey: "country_id" });
 
 //Exports
 export default City;

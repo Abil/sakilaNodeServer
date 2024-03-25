@@ -1,17 +1,21 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../utils/db.js";
 
-// Define the Country model
-const Country = sequelize.define(
-  "country",
+// Define the Store model
+const Store = sequelize.define(
+  "store",
   {
-    country_id: {
-      type: DataTypes.SMALLINT.UNSIGNED,
+    store_id: {
+      type: DataTypes.TINYINT.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
     },
-    country: {
-      type: DataTypes.STRING(50),
+    manager_staff_id: {
+      type: DataTypes.TINYINT.UNSIGNED,
+      allowNull: false,
+    },
+    address_id: {
+      type: DataTypes.SMALLINT.UNSIGNED,
       allowNull: false,
     },
     last_update: {
@@ -23,10 +27,10 @@ const Country = sequelize.define(
     },
   },
   {
-    tableName: "country",
+    tableName: "store",
     timestamps: false,
   }
 );
 
 //Exports
-export default Country;
+export default Store;

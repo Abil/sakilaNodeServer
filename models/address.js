@@ -1,9 +1,7 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../utils/db.js";
 
-//import City from "./city.js";
-
-// Define the Language model
+// Define the Address model
 const Address = sequelize.define(
   "address",
   {
@@ -49,10 +47,6 @@ const Address = sequelize.define(
     timestamps: false,
   }
 );
-
-/*Associations*/
-//Every address entry has only one city entry associated (one to one)
-// Address.belongsTo(City, { foreignKey: "city_id" });
 
 //Exports
 export default Address;
