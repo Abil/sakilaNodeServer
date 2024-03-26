@@ -6,9 +6,39 @@ import City from "../models/city.js";
 import Country from "../models/country.js";
 
 // Get all inventories
+// export const getAllInventories = async (req, res) => {
+//   try {
+//     const inventories = await Inventory.findAll({
+//       include: [
+//         { model: Film, as: "film" },
+//         {
+//           model: Store,
+//           as: "store",
+//           include: [
+//             {
+//               model: Address,
+//               include: [{ model: City, include: [{ model: Country }] }],
+//             },
+//           ],
+//         },
+//       ],
+//     });
+//     res.json(inventories);
+//   } catch (error) {
+//     console.error("Error fetching all inventories:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all inventories with pagination
 export const getAllInventories = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const inventories = await Inventory.findAll({
+    const { count, rows } = await Inventory.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
       include: [
         { model: Film, as: "film" },
         {
@@ -23,7 +53,16 @@ export const getAllInventories = async (req, res) => {
         },
       ],
     });
-    res.json(inventories);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      inventories: rows,
+    });
   } catch (error) {
     console.error("Error fetching all inventories:", error);
     res.status(500).json({ error: "Internal Server Error" });

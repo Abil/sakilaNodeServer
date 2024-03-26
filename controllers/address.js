@@ -12,20 +12,53 @@ export const createAddress = async (req, res) => {
   }
 };
 
+// export const getAllAddresses = async (req, res) => {
+//   try {
+//     const addresses = await Address.findAll({
+//       include: [
+//         {
+//           model: City,
+//           include: Country,
+//         },
+//       ],
+//     });
+//     res.json(addresses);
+//   } catch (error) {
+//     console.error("Error fetching addresses:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// Get all addresses with pagination
 export const getAllAddresses = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const addresses = await Address.findAll({
+    const { count, rows } = await Address.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
       include: [
         {
           model: City,
-          include: Country,
+          as: "city",
+          include: [{ model: Country, as: "country" }],
         },
       ],
     });
-    res.json(addresses);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      addresses: rows,
+    });
   } catch (error) {
-    console.error("Error fetching addresses:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching all addresses:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

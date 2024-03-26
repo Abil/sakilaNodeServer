@@ -10,13 +10,39 @@ export const createInvestor = async (req, res) => {
   }
 };
 
+// export const getAllInvestors = async (req, res) => {
+//   try {
+//     const investors = await Investor.findAll();
+//     res.json(investors);
+//   } catch (error) {
+//     console.error("Error fetching investors:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// Get all investors with pagination
 export const getAllInvestors = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const investors = await Investor.findAll();
-    res.json(investors);
+    const { count, rows } = await Investor.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      investors: rows,
+    });
   } catch (error) {
-    console.error("Error fetching investors:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching all investors:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

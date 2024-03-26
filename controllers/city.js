@@ -11,13 +11,40 @@ export const createCity = async (req, res) => {
   }
 };
 
+// export const getAllCities = async (req, res) => {
+//   try {
+//     const cities = await City.findAll({ include: Country });
+//     res.json(cities);
+//   } catch (error) {
+//     console.error("Error fetching cities:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// Get all cities with pagination
 export const getAllCities = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const cities = await City.findAll({ include: Country });
-    res.json(cities);
+    const { count, rows } = await City.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+      include: [{ model: Country, as: "country" }],
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      cities: rows,
+    });
   } catch (error) {
-    console.error("Error fetching cities:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching all cities:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

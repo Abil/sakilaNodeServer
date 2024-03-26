@@ -1,12 +1,38 @@
 import Advisor from "../models/advisor.js"; // Import your Sequelize Advisor model
 
 // Get all advisors
-const getAllAdvisors = async (req, res) => {
+// const getAllAdvisors = async (req, res) => {
+//   try {
+//     const advisors = await Advisor.findAll();
+//     res.json(advisors);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// Get all advisors with pagination
+export const getAllAdvisors = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const advisors = await Advisor.findAll();
-    res.json(advisors);
+    const { count, rows } = await Advisor.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      advisors: rows,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching all advisors:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

@@ -10,13 +10,39 @@ export const createCountry = async (req, res) => {
   }
 };
 
+// export const getAllCountries = async (req, res) => {
+//   try {
+//     const countries = await Country.findAll();
+//     res.json(countries);
+//   } catch (error) {
+//     console.error("Error fetching countries:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// Get all countries with pagination
 export const getAllCountries = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const countries = await Country.findAll();
-    res.json(countries);
+    const { count, rows } = await Country.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      countries: rows,
+    });
   } catch (error) {
-    console.error("Error fetching countries:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching all countries:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

@@ -13,13 +13,39 @@ const createActor = async (req, res) => {
 };
 
 // Controller for retrieving all actors
-const getAllActors = async (req, res) => {
+// const getAllActors = async (req, res) => {
+//   try {
+//     const actors = await Actor.findAll();
+//     res.json(actors);
+//   } catch (error) {
+//     console.error("Error fetching actors:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// Get all actors with pagination
+export const getAllActors = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const actors = await Actor.findAll();
-    res.json(actors);
+    const { count, rows } = await Actor.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      actors: rows,
+    });
   } catch (error) {
-    console.error("Error fetching actors:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching all actors:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

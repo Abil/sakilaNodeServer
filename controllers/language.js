@@ -10,13 +10,39 @@ export const createLanguage = async (req, res) => {
   }
 };
 
+// export const getAllLanguages = async (req, res) => {
+//   try {
+//     const languages = await Language.findAll();
+//     res.json(languages);
+//   } catch (error) {
+//     console.error("Error fetching languages:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// Get all languages with pagination
 export const getAllLanguages = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const languages = await Language.findAll();
-    res.json(languages);
+    const { count, rows } = await Language.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      languages: rows,
+    });
   } catch (error) {
-    console.error("Error fetching languages:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching all languages:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

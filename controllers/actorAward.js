@@ -18,11 +18,39 @@ export const createActorAward = async (req, res) => {
 };
 
 // Get actor awards by actor ID
+// export const getActorAward = async (req, res) => {
+//   const { actorId: actor_id } = req.params;
+//   try {
+//     const actorAwards = await ActorAward.findAll({ where: { actor_id } });
+//     res.json(actorAwards);
+//   } catch (error) {
+//     console.error("Error fetching actor awards:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all actor awards for a specific actor with pagination
 export const getActorAward = async (req, res) => {
-  const { actorId: actor_id } = req.params;
+  const { actorId } = req.params;
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const actorAwards = await ActorAward.findAll({ where: { actor_id } });
-    res.json(actorAwards);
+    const { count, rows } = await ActorAward.findAndCountAll({
+      where: { actor_id: actorId },
+      offset,
+      limit: Number(pageSize),
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      actorAwards: rows,
+    });
   } catch (error) {
     console.error("Error fetching actor awards:", error);
     res.status(500).json({ error: "Internal Server Error" });

@@ -6,9 +6,55 @@ import Country from "../models/country.js";
 import Staff from "../models/staff.js";
 
 // Get all customers
+// export const getAllCustomers = async (req, res) => {
+//   try {
+//     const customers = await Customer.findAll({
+//       include: [
+//         {
+//           model: Store,
+//           include: [
+//             {
+//               model: Address,
+//               include: [{ model: City, include: [{ model: Country }] }],
+//             },
+//             {
+//               model: Staff,
+//               include: [
+//                 {
+//                   model: Address,
+//                   include: [{ model: City, include: [{ model: Country }] }],
+//                 },
+//               ],
+//             },
+//           ],
+//         },
+//         {
+//           model: Address,
+//           include: [
+//             {
+//               model: City,
+//               include: [{ model: Country }],
+//             },
+//           ],
+//         },
+//       ],
+//     });
+//     res.json(customers);
+//   } catch (error) {
+//     console.error("Error fetching customers:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all customers with pagination
 export const getAllCustomers = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const customers = await Customer.findAll({
+    const { count, rows } = await Customer.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
       include: [
         {
           model: Store,
@@ -39,9 +85,18 @@ export const getAllCustomers = async (req, res) => {
         },
       ],
     });
-    res.json(customers);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      customers: rows,
+    });
   } catch (error) {
-    console.error("Error fetching customers:", error);
+    console.error("Error fetching all customers:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

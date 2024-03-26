@@ -26,11 +26,50 @@ export const createFilmActor = async (req, res) => {
 };
 
 // Get all actors for a film by film ID
+// export const getAllActorsForFilm = async (req, res) => {
+//   const { filmId } = req.params;
+//   try {
+//     const actors = await FilmActor.findAll({
+//       where: { film_id: filmId },
+//       include: [
+//         {
+//           model: Film,
+//           as: "film",
+//           attributes: ["film_id", "title"],
+//           include: [
+//             {
+//               model: Category,
+//               as: "category",
+//               attributes: { include: ["name"], exclude: ["film_category"] },
+//               through: { attributes: [] },
+//             },
+//           ],
+//         },
+//         {
+//           model: Actor,
+//           as: "actor",
+//           attributes: ["first_name", "last_name"],
+//         },
+//       ],
+//     });
+//     res.json(actors);
+//   } catch (error) {
+//     console.error("Error fetching actors for film:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all actors for a film with pagination
 export const getAllActorsForFilm = async (req, res) => {
-  const { filmId } = req.params;
+  const filmId = req.params.filmId;
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const actors = await FilmActor.findAll({
+    const { count, rows } = await FilmActor.findAndCountAll({
       where: { film_id: filmId },
+      offset,
+      limit: Number(pageSize),
       include: [
         {
           model: Film,
@@ -52,7 +91,16 @@ export const getAllActorsForFilm = async (req, res) => {
         },
       ],
     });
-    res.json(actors);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      actors: rows.map((row) => row.actor),
+    });
   } catch (error) {
     console.error("Error fetching actors for film:", error);
     res.status(500).json({ error: "Internal Server Error" });

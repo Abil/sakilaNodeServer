@@ -10,13 +10,39 @@ export const createCategory = async (req, res) => {
   }
 };
 
+// export const getAllCategories = async (req, res) => {
+//   try {
+//     const categories = await Category.findAll();
+//     res.json(categories);
+//   } catch (error) {
+//     console.error("Error fetching categories:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// Get all categories with pagination
 export const getAllCategories = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const categories = await Category.findAll();
-    res.json(categories);
+    const { count, rows } = await Category.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      categories: rows,
+    });
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching all categories:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

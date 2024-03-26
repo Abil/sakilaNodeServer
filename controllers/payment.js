@@ -115,9 +115,57 @@ export const deletePayment = async (req, res) => {
 
 // Get all payments
 export const getAllPayments = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
+  // try {
+  //   const payments = await Payment.findAll({
+  //     //TODO: Implement after pagination
+  //     include: [
+  //       { model: Customer, as: "customer" },
+  //       {
+  //         model: Rental,
+  //         as: "rental",
+  //         include: [
+  //           {
+  //             model: Inventory,
+  //             as: "inventory",
+  //             include: [
+  //               {
+  //                 model: Film,
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         model: Staff,
+  //         as: "staff",
+  //         include: [
+  //           {
+  //             model: Store,
+  //             as: "store",
+  //             include: [
+  //               {
+  //                 model: Address,
+  //                 include: [{ model: City, include: [{ model: Country }] }],
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   });
+  //   res.json(payments);
+  // } catch (error) {
+  //   console.error("Error fetching all payments:", error);
+  //   res.status(500).json({ error: "Internal Server Error" });
+  // }
+
   try {
-    const payments =
-      await Payment.findAll(/*{    //TODO: Implement after pagination
+    const { count, rows } = await Payment.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
       include: [
         { model: Customer, as: "customer" },
         {
@@ -152,8 +200,17 @@ export const getAllPayments = async (req, res) => {
           ],
         },
       ],
-    }*/);
-    res.json(payments);
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      payments: rows,
+    });
   } catch (error) {
     console.error("Error fetching all payments:", error);
     res.status(500).json({ error: "Internal Server Error" });

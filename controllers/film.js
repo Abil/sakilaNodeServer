@@ -3,17 +3,47 @@ import Language from "../models/language.js";
 import Category from "../models/category.js";
 
 // Get all films
+// export const getAllFilms = async (req, res) => {
+//   try {
+//     const films = await Film.findAll({
+//       include: [
+//         { model: Language, as: "language" },
+//         { model: Language, as: "original_language" },
+//       ],
+//     });
+//     res.json(films);
+//   } catch (error) {
+//     console.error("Error fetching films:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all films with pagination
 export const getAllFilms = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const films = await Film.findAll({
+    const { count, rows } = await Film.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
       include: [
         { model: Language, as: "language" },
         { model: Language, as: "original_language" },
       ],
     });
-    res.json(films);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      films: rows,
+    });
   } catch (error) {
-    console.error("Error fetching films:", error);
+    console.error("Error fetching all films:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

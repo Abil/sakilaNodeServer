@@ -5,9 +5,46 @@ import Country from "../models/country.js";
 import Staff from "../models/staff.js";
 
 // Get all staff with eager loading of related models
+// export const getAllStaff = async (req, res) => {
+//   try {
+//     const staff = await Staff.findAll({
+//       include: [
+//         {
+//           model: Store,
+//           include: [
+//             {
+//               model: Address,
+//               include: [{ model: City, include: [{ model: Country }] }],
+//             },
+//           ],
+//         },
+//         {
+//           model: Address,
+//           include: [
+//             {
+//               model: City,
+//               include: [{ model: Country }],
+//             },
+//           ],
+//         },
+//       ],
+//     });
+//     res.json(staff);
+//   } catch (error) {
+//     console.error("Error fetching staff:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all staff with pagination
 export const getAllStaff = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const staff = await Staff.findAll({
+    const { count, rows } = await Staff.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
       include: [
         {
           model: Store,
@@ -29,9 +66,18 @@ export const getAllStaff = async (req, res) => {
         },
       ],
     });
-    res.json(staff);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      staff: rows,
+    });
   } catch (error) {
-    console.error("Error fetching staff:", error);
+    console.error("Error fetching all staff:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

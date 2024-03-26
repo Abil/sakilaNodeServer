@@ -3,11 +3,38 @@ import Film from "../models/film.js";
 import Category from "../models/category.js";
 
 // Get all categories for a film by film ID
+// export const getAllCategoriesForFilm = async (req, res) => {
+//   const { filmId } = req.params;
+//   try {
+//     const categories = await FilmCategory.findAll({
+//       where: { film_id: filmId },
+//       include: [
+//         { model: Film, as: "film", attributes: ["title", "description"] },
+//         {
+//           model: Category,
+//           as: "category",
+//           attributes: ["name"],
+//         },
+//       ],
+//     });
+//     res.json(categories);
+//   } catch (error) {
+//     console.error("Error fetching categories for film:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all categories for a film with pagination
 export const getAllCategoriesForFilm = async (req, res) => {
-  const { filmId } = req.params;
+  const filmId = req.params.filmId;
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const categories = await FilmCategory.findAll({
+    const { count, rows } = await FilmCategory.findAndCountAll({
       where: { film_id: filmId },
+      offset,
+      limit: Number(pageSize),
       include: [
         { model: Film, as: "film", attributes: ["title", "description"] },
         {
@@ -17,7 +44,16 @@ export const getAllCategoriesForFilm = async (req, res) => {
         },
       ],
     });
-    res.json(categories);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      categories: rows.map((row) => row.category),
+    });
   } catch (error) {
     console.error("Error fetching categories for film:", error);
     res.status(500).json({ error: "Internal Server Error" });

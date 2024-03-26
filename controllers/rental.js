@@ -109,10 +109,55 @@ export const deleteRental = async (req, res) => {
 };
 
 // Get all rentals
+// export const getAllRentals = async (req, res) => {
+//   try {
+//     const rentals =
+//       await Rental.findAll(/*{    //TODO: Uncomment after implementing pagination as it is crashing at the moment
+//       include: [
+//         { model: Customer, as: "customer" },
+//         {
+//           model: Inventory,
+//           as: "inventory",
+//           include: [
+//             {
+//               model: Film,
+//             },
+//           ],
+//         },
+//         {
+//           model: Staff,
+//           as: "staff",
+//           include: [
+//             {
+//               model: Store,
+//               as: "store",
+//               include: [
+//                 {
+//                   model: Address,
+//                   include: [{ model: City, include: [{ model: Country }] }],
+//                 },
+//               ],
+//             },
+//           ],
+//         },
+//       ],
+//     }*/);
+//     res.json(rentals);
+//   } catch (error) {
+//     console.error("Error fetching all rentals:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// Get all rentals with pagination
 export const getAllRentals = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const rentals =
-      await Rental.findAll(/*{    //TODO: Uncomment after implementing pagination as it is crashing at the moment
+    const { count, rows } = await Rental.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
       include: [
         { model: Customer, as: "customer" },
         {
@@ -141,8 +186,17 @@ export const getAllRentals = async (req, res) => {
           ],
         },
       ],
-    }*/);
-    res.json(rentals);
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      rentals: rows,
+    });
   } catch (error) {
     console.error("Error fetching all rentals:", error);
     res.status(500).json({ error: "Internal Server Error" });
