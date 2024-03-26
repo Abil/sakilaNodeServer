@@ -1,4 +1,5 @@
 import Actor from "../models/actor.js";
+import ActorAward from "../models/actorAward.js";
 
 // Controller for creating a new actor
 const createActor = async (req, res) => {
@@ -26,7 +27,9 @@ const getAllActors = async (req, res) => {
 const getActorById = async (req, res) => {
   const { id } = req.params;
   try {
-    const actor = await Actor.findByPk(id);
+    const actor = await Actor.findByPk(id, {
+      include: [{ model: ActorAward, attributes: ["awards"] }],
+    });
     if (!actor) {
       return res.status(404).json({ error: "Actor not found" });
     }

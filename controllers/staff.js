@@ -41,6 +41,7 @@ export const getStaffById = async (req, res) => {
   const { staffId } = req.params;
   try {
     const staff = await Staff.findByPk(staffId, {
+      attributes: { exclude: ["password"] },
       include: [
         {
           model: Store,
