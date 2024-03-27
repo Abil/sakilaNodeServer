@@ -61,9 +61,7 @@ const Film = sequelize.define(
     last_update: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: Sequelize.literal(
-        "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-      ),
+      defaultValue: DataTypes.NOW,
     },
   },
   {

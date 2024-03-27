@@ -64,7 +64,7 @@ export const updateCategory = async (req, res) => {
   const { id } = req.params;
   try {
     const [updated] = await Category.update(req.body, {
-      where: { id: id },
+      where: { category_id: id },
     });
     if (updated) {
       const updatedCategory = await Category.findByPk(id);
@@ -84,7 +84,7 @@ export const deleteCategory = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Category.destroy({
-      where: { id: id },
+      where: { category_id: id },
     });
     if (deleted) {
       return res.json({ message: "Category deleted successfully" });

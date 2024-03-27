@@ -64,7 +64,7 @@ export const updateInvestor = async (req, res) => {
   const { id } = req.params;
   try {
     const [updated] = await Investor.update(req.body, {
-      where: { id: id },
+      where: { investor_id: id },
     });
     if (updated) {
       const updatedInvestor = await Investor.findByPk(id);
@@ -84,7 +84,7 @@ export const deleteInvestor = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Investor.destroy({
-      where: { id: id },
+      where: { investor_id: id },
     });
     if (deleted) {
       return res.json({ message: "Investor deleted successfully" });

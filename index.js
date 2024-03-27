@@ -23,6 +23,7 @@ import authRoutes from "./routes/auth.js";
 
 import sequelize from "./utils/db.js";
 import { associateModels } from "./models/associations.js";
+import { requireSignin } from "./middlewares/auth.js";
 
 const app = express();
 const port = 8000;
@@ -47,24 +48,24 @@ const initializeApp = async () => {
   app.use(express.json());
 
   // Router Middleware
-  app.use("/api/actor", actorRoutes);
-  app.use("/api/address", addressRoutes);
-  app.use("/api/advisor", advisorRoutes);
-  app.use("/api/category", categoryRoutes);
-  app.use("/api/country", countryRoutes);
-  app.use("/api/city", cityRoutes);
-  app.use("/api/investor", investorRoutes);
-  app.use("/api/language", languageRoutes);
-  app.use("/api/staff", staffRoutes);
-  app.use("/api/store", storeRoutes);
-  app.use("/api/customer", customerRoutes);
-  app.use("/api/film", filmRoutes);
-  app.use("/api/film-category", filmCategoryRoutes);
-  app.use("/api/film-actor", filmActorRoutes);
-  app.use("/api/actor-award", actorAwardRoutes);
-  app.use("/api/inventory", inventoryRoutes);
-  app.use("/api/rental", rentalRoutes);
-  app.use("/api/payment", paymentRoutes);
+  app.use("/api/actor", requireSignin, actorRoutes);
+  app.use("/api/address", requireSignin, addressRoutes);
+  app.use("/api/advisor", requireSignin, advisorRoutes);
+  app.use("/api/category", requireSignin, categoryRoutes);
+  app.use("/api/country", requireSignin, countryRoutes);
+  app.use("/api/city", requireSignin, cityRoutes);
+  app.use("/api/investor", requireSignin, investorRoutes);
+  app.use("/api/language", requireSignin, languageRoutes);
+  app.use("/api/staff", requireSignin, staffRoutes);
+  app.use("/api/store", requireSignin, storeRoutes);
+  app.use("/api/customer", requireSignin, customerRoutes);
+  app.use("/api/film", requireSignin, filmRoutes);
+  app.use("/api/film-category", requireSignin, filmCategoryRoutes);
+  app.use("/api/film-actor", requireSignin, filmActorRoutes);
+  app.use("/api/actor-award", requireSignin, actorAwardRoutes);
+  app.use("/api/inventory", requireSignin, inventoryRoutes);
+  app.use("/api/rental", requireSignin, rentalRoutes);
+  app.use("/api/payment", requireSignin, paymentRoutes);
   app.use("/api/auth", authRoutes);
 
   // Ping Test

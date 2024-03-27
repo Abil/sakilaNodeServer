@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   getAllStores,
@@ -17,12 +18,12 @@ router.get("/", getAllStores);
 router.get("/:storeId", getStoreById);
 
 // POST create a new store
-router.post("/", createNewStore);
+router.post("/", isAdmin, createNewStore);
 
 // PUT update an existing store
-router.put("/:storeId", updateStore);
+router.put("/:storeId", isAdmin, updateStore);
 
 // DELETE delete an existing store
-router.delete("/:storeId", deleteStore);
+router.delete("/:storeId", isAdmin, deleteStore);
 
 export default router;

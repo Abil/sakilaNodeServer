@@ -46,6 +46,7 @@ export const getRental = async (req, res) => {
         {
           model: Staff,
           as: "staff",
+          attributes: { exclude: ["password", "picture"] },
           include: [
             {
               model: Store,
@@ -84,7 +85,9 @@ export const updateRental = async (req, res) => {
     if (updatedRows === 0) {
       return res.status(404).json({ error: "Rental not found" });
     }
-    res.sendStatus(200);
+    res.status(200).json({
+      message: "Rental item updated successfully",
+    });
   } catch (error) {
     console.error("Error updating rental:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -101,7 +104,9 @@ export const deleteRental = async (req, res) => {
     if (deletedRows === 0) {
       return res.status(404).json({ error: "Rental not found" });
     }
-    res.sendStatus(200);
+    res.status(200).json({
+      message: "Rental item deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting rental:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -172,6 +177,7 @@ export const getAllRentals = async (req, res) => {
         {
           model: Staff,
           as: "staff",
+          attributes: { exclude: ["password", "picture"] },
           include: [
             {
               model: Store,

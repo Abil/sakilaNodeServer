@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   getAllFilms,
@@ -17,12 +18,12 @@ router.get("/", getAllFilms);
 router.get("/:filmId", getFilmById);
 
 // POST create a new film
-router.post("/", createNewFilm);
+router.post("/", isAdmin, createNewFilm);
 
 // PUT update an existing film
-router.put("/:filmId", updateFilm);
+router.put("/:filmId", isAdmin, updateFilm);
 
 // DELETE delete an existing film
-router.delete("/:filmId", deleteFilm);
+router.delete("/:filmId", isAdmin, deleteFilm);
 
 export default router;

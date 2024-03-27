@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   createRental,
@@ -10,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.post("/", createRental);
+router.post("/", isAdmin, createRental);
 router.get("/", getAllRentals);
 router.get("/:rentalId", getRental);
-router.put("/:rentalId", updateRental);
-router.delete("/:rentalId", deleteRental);
+router.put("/:rentalId", isAdmin, updateRental);
+router.delete("/:rentalId", isAdmin, deleteRental);
 
 export default router;

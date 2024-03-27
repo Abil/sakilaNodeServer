@@ -63,15 +63,16 @@ export const getAllCustomers = async (req, res) => {
               model: Address,
               include: [{ model: City, include: [{ model: Country }] }],
             },
-            {
-              model: Staff,
-              include: [
-                {
-                  model: Address,
-                  include: [{ model: City, include: [{ model: Country }] }],
-                },
-              ],
-            },
+            // {
+            //   model: Staff,
+            //   attributes: { exclude: ["password", "picture"] },
+            //   include: [
+            //     {
+            //       model: Address,
+            //       include: [{ model: City, include: [{ model: Country }] }],
+            //     },
+            //   ],
+            // },
           ],
         },
         {
@@ -114,8 +115,19 @@ export const getCustomerById = async (req, res) => {
               model: Address,
               include: [{ model: City, include: [{ model: Country }] }],
             },
+            {
+              model: Staff,
+              attributes: { exclude: ["password", "picture"] },
+              include: [
+                {
+                  model: Address,
+                  include: [{ model: City, include: [{ model: Country }] }],
+                },
+              ],
+            },
           ],
         },
+
         {
           model: Address,
           include: [
@@ -139,15 +151,8 @@ export const getCustomerById = async (req, res) => {
 
 // Create a new customer
 export const createNewCustomer = async (req, res) => {
-  const {
-    store_id,
-    first_name,
-    last_name,
-    email,
-    address_id,
-    active,
-    create_date,
-  } = req.body;
+  const { store_id, first_name, last_name, email, address_id, active } =
+    req.body;
   try {
     const newCustomer = await Customer.create({
       store_id,
@@ -156,7 +161,6 @@ export const createNewCustomer = async (req, res) => {
       email,
       address_id,
       active,
-      create_date,
     });
     res.status(201).json(newCustomer);
   } catch (error) {
@@ -168,15 +172,8 @@ export const createNewCustomer = async (req, res) => {
 // Update an existing customer
 export const updateCustomer = async (req, res) => {
   const { customerId } = req.params;
-  const {
-    store_id,
-    first_name,
-    last_name,
-    email,
-    address_id,
-    active,
-    create_date,
-  } = req.body;
+  const { store_id, first_name, last_name, email, address_id, active } =
+    req.body;
   try {
     const customer = await Customer.findByPk(customerId);
     if (!customer) {
@@ -188,7 +185,6 @@ export const updateCustomer = async (req, res) => {
     customer.email = email;
     customer.address_id = address_id;
     customer.active = active;
-    customer.create_date = create_date;
     await customer.save();
     res.json(customer);
   } catch (error) {

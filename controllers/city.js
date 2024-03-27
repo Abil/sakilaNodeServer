@@ -66,7 +66,7 @@ export const updateCity = async (req, res) => {
   const { id } = req.params;
   try {
     const [updated] = await City.update(req.body, {
-      where: { id: id },
+      where: { city_id: id },
     });
     if (updated) {
       const updatedCity = await City.findByPk(id);
@@ -86,7 +86,7 @@ export const deleteCity = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await City.destroy({
-      where: { id: id },
+      where: { city_id: id },
     });
     if (deleted) {
       return res.json({ message: "City deleted successfully" });

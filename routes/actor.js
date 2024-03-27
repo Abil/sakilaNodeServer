@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   createActor,
@@ -11,10 +12,10 @@ import {
 const router = express.Router();
 
 // Routes for CRUD operations on actors
-router.post("/", createActor); // Create a new actor
+router.post("/", isAdmin, createActor); // Create a new actor
 router.get("/", getAllActors); // Get all actors
 router.get("/:id", getActorById); // Get actor by ID
-router.put("/:id", updateActor); // Update actor by ID
-router.delete("/:id", deleteActor); // Delete actor by ID
+router.put("/:id", isAdmin, updateActor); // Update actor by ID
+router.delete("/:id", isAdmin, deleteActor); // Delete actor by ID
 
 export default router;

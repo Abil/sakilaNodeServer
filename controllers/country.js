@@ -64,7 +64,7 @@ export const updateCountry = async (req, res) => {
   const { id } = req.params;
   try {
     const [updated] = await Country.update(req.body, {
-      where: { id: id },
+      where: { country_id: id },
     });
     if (updated) {
       const updatedCountry = await Country.findByPk(id);
@@ -73,7 +73,7 @@ export const updateCountry = async (req, res) => {
         country: updatedCountry,
       });
     }
-    throw new Error("Country not found");
+    return res.status(404).json({ message: "Country not found" });
   } catch (error) {
     console.error("Error updating country:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -84,12 +84,12 @@ export const deleteCountry = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Country.destroy({
-      where: { id: id },
+      where: { country_id: id },
     });
     if (deleted) {
       return res.json({ message: "Country deleted successfully" });
     }
-    throw new Error("Country not found");
+    return res.status(404).json({ message: "Country not found" });
   } catch (error) {
     console.error("Error deleting country:", error);
     res.status(500).json({ error: "Internal server error" });

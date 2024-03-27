@@ -71,7 +71,7 @@ const updateActor = async (req, res) => {
   const { id } = req.params;
   try {
     const [updated] = await Actor.update(req.body, {
-      where: { id: id },
+      where: { actor_id: id },
     });
     if (updated) {
       const updatedActor = await Actor.findByPk(id);
@@ -92,7 +92,7 @@ const deleteActor = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Actor.destroy({
-      where: { id: id },
+      where: { actor_id: id },
     });
     if (deleted) {
       return res.json({ message: "Actor deleted successfully" });

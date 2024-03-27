@@ -87,7 +87,7 @@ export const updateAddress = async (req, res) => {
   const { id } = req.params;
   try {
     const [updated] = await Address.update(req.body, {
-      where: { id: id },
+      where: { address_id: id },
     });
     if (updated) {
       const updatedAddress = await Address.findByPk(id);
@@ -107,7 +107,7 @@ export const deleteAddress = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Address.destroy({
-      where: { id: id },
+      where: { address_id: id },
     });
     if (deleted) {
       return res.json({ message: "Address deleted successfully" });

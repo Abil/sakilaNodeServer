@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   createActorAward,
@@ -9,9 +10,9 @@ import {
 
 const router = express.Router();
 
-router.post("/", createActorAward);
+router.post("/", isAdmin, createActorAward);
 router.get("/:actorId", getActorAward);
-router.put("/:actorId", updateActorAward);
-router.delete("/:actorId", deleteActorAward);
+router.put("/:actorId", isAdmin, updateActorAward);
+router.delete("/:actorId", isAdmin, deleteActorAward);
 
 export default router;

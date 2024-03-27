@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   getAllStaff,
@@ -17,12 +18,12 @@ router.get("/", getAllStaff);
 router.get("/:staffId", getStaffById);
 
 // POST create a new staff
-router.post("/", createNewStaff);
+router.post("/", isAdmin, createNewStaff);
 
 // PUT update an existing staff
-router.put("/:staffId", updateStaff);
+router.put("/:staffId", isAdmin, updateStaff);
 
 // DELETE delete an existing staff
-router.delete("/:staffId", deleteStaff);
+router.delete("/:staffId", isAdmin, deleteStaff);
 
 export default router;

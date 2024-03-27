@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   createInvestor,
@@ -11,10 +12,10 @@ import {
 const router = express.Router();
 
 // Routes for CRUD operations on investors
-router.post("/", createInvestor); // Create a new investor
+router.post("/", isAdmin, createInvestor); // Create a new investor
 router.get("/", getAllInvestors); // Get all investors
 router.get("/:id", getInvestorById); // Get investor by ID
-router.put("/:id", updateInvestor); // Update investor by ID
-router.delete("/:id", deleteInvestor); // Delete investor by ID
+router.put("/:id", isAdmin, updateInvestor); // Update investor by ID
+router.delete("/:id", isAdmin, deleteInvestor); // Delete investor by ID
 
 export default router;

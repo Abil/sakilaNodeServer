@@ -122,7 +122,9 @@ export const updateInventory = async (req, res) => {
     if (updatedRows === 0) {
       return res.status(404).json({ error: "Inventory item not found" });
     }
-    res.sendStatus(200);
+    res.status(200).json({
+      message: "Inventory item updated successfully",
+    });
   } catch (error) {
     console.error("Error updating inventory item:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -139,7 +141,9 @@ export const deleteInventory = async (req, res) => {
     if (deletedRows === 0) {
       return res.status(404).json({ error: "Inventory item not found" });
     }
-    res.sendStatus(200);
+    res.status(200).json({
+      message: "Inventory item deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting inventory item:", error);
     res.status(500).json({ error: "Internal Server Error" });

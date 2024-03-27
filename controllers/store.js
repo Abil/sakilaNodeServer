@@ -43,6 +43,7 @@ export const getAllStores = async (req, res) => {
       include: [
         {
           model: Staff,
+          attributes: { exclude: ["password", "picture"] },
           include: [
             {
               model: Address,
@@ -127,6 +128,7 @@ export const getStoreById = async (req, res) => {
       include: [
         {
           model: Staff,
+          attributes: { exclude: ["password", "picture"] },
           include: [
             {
               model: Address,

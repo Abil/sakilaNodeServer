@@ -2,7 +2,7 @@ import ActorAward from "../models/actorAward.js";
 
 // Create a new actor award
 export const createActorAward = async (req, res) => {
-  const { actorId: actor_id, first_name, last_name, awards } = req.body;
+  const { actor_id, first_name, last_name, awards } = req.body;
   try {
     const actorAward = await ActorAward.create({
       actor_id,
@@ -66,7 +66,7 @@ export const updateActorAward = async (req, res) => {
       { first_name, last_name, awards },
       { where: { actor_id } }
     );
-    res.sendStatus(200);
+    return res.json({ message: "Actor award updated successfully" });
   } catch (error) {
     console.error("Error updating actor awards:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -78,7 +78,7 @@ export const deleteActorAward = async (req, res) => {
   const { actorId: actor_id } = req.params;
   try {
     await ActorAward.destroy({ where: { actor_id } });
-    res.sendStatus(200);
+    return res.json({ message: "Actor award deleted successfully" });
   } catch (error) {
     console.error("Error deleting actor awards:", error);
     res.status(500).json({ error: "Internal Server Error" });

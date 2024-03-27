@@ -52,6 +52,7 @@ export const getPayment = async (req, res) => {
         {
           model: Staff,
           as: "staff",
+          attributes: { exclude: ["password", "picture"] },
           include: [
             {
               model: Store,
@@ -89,7 +90,9 @@ export const updatePayment = async (req, res) => {
     if (updatedRows === 0) {
       return res.status(404).json({ error: "Payment not found" });
     }
-    res.sendStatus(200);
+    res.status(200).json({
+      message: "Payment item updated successfully",
+    });
   } catch (error) {
     console.error("Error updating payment:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -106,7 +109,9 @@ export const deletePayment = async (req, res) => {
     if (deletedRows === 0) {
       return res.status(404).json({ error: "Payment not found" });
     }
-    res.sendStatus(200);
+    res.status(200).json({
+      message: "Payment item deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting payment:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -186,6 +191,7 @@ export const getAllPayments = async (req, res) => {
         {
           model: Staff,
           as: "staff",
+          attributes: { exclude: ["password", "picture"] },
           include: [
             {
               model: Store,

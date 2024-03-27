@@ -54,8 +54,12 @@ const getAdvisorById = async (req, res) => {
 // Create a new advisor
 const createAdvisor = async (req, res) => {
   try {
-    const { firstName, lastName, isChairmain } = req.body;
-    const advisor = await Advisor.create({ firstName, lastName, isChairmain });
+    const { first_name, last_name, is_chairmain } = req.body;
+    const advisor = await Advisor.create({
+      first_name,
+      last_name,
+      is_chairmain,
+    });
     res.status(201).json(advisor);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -66,15 +70,15 @@ const createAdvisor = async (req, res) => {
 const updateAdvisor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, isChairmain } = req.body;
+    const { first_name, last_name, is_chairmain } = req.body;
     const advisor = await Advisor.findByPk(id);
     if (!advisor) {
       res.status(404).json({ error: "Advisor not found" });
       return;
     }
-    advisor.firstName = firstName;
-    advisor.lastName = lastName;
-    advisor.isChairmain = isChairmain;
+    advisor.first_name = first_name;
+    advisor.last_name = last_name;
+    advisor.is_chairmain = is_chairmain;
     await advisor.save();
     res.json(advisor);
   } catch (error) {

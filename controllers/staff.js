@@ -45,7 +45,7 @@ export const getAllStaff = async (req, res) => {
     const { count, rows } = await Staff.findAndCountAll({
       offset,
       limit: Number(pageSize),
-      attributes: { exclude: ["password"] },
+      attributes: { exclude: ["password", "picture"] },
       include: [
         {
           model: Store,
@@ -122,9 +122,15 @@ export const getStaffById = async (req, res) => {
 
 // Create a new staff
 export const createNewStaff = async (req, res) => {
-  const { first_name, last_name, address_id } = req.body;
+  const { first_name, last_name, address_id, store_id, username } = req.body;
   try {
-    const newStaff = await Staff.create({ first_name, last_name, address_id });
+    const newStaff = await Staff.create({
+      first_name,
+      last_name,
+      address_id,
+      store_id,
+      username,
+    });
     res.status(201).json(newStaff);
   } catch (error) {
     console.error("Error creating staff:", error);
@@ -135,7 +141,7 @@ export const createNewStaff = async (req, res) => {
 // Update an existing staff
 export const updateStaff = async (req, res) => {
   const { staffId } = req.params;
-  const { first_name, last_name, address_id } = req.body;
+  const { first_name, last_name, address_id, store_id, username } = req.body;
   try {
     const staff = await Staff.findByPk(staffId);
     if (!staff) {
@@ -144,6 +150,9 @@ export const updateStaff = async (req, res) => {
     staff.first_name = first_name;
     staff.last_name = last_name;
     staff.address_id = address_id;
+    staff.store_id = store_id;
+    staff.username = username;
+
     await staff.save();
     res.json(staff);
   } catch (error) {

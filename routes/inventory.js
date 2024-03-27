@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/auth.js";
 
 import {
   getAllInventories,
@@ -10,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.post("/", createInventory);
+router.post("/", isAdmin, createInventory);
 router.get("/", getAllInventories);
 router.get("/:inventoryId", getInventory);
-router.put("/:inventoryId", updateInventory);
-router.delete("/:inventoryId", deleteInventory);
+router.put("/:inventoryId", isAdmin, updateInventory);
+router.delete("/:inventoryId", isAdmin, deleteInventory);
 
 export default router;

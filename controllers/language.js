@@ -64,7 +64,7 @@ export const updateLanguage = async (req, res) => {
   const { id } = req.params;
   try {
     const [updated] = await Language.update(req.body, {
-      where: { id: id },
+      where: { language_id: id },
     });
     if (updated) {
       const updatedLanguage = await Language.findByPk(id);
@@ -84,7 +84,7 @@ export const deleteLanguage = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Language.destroy({
-      where: { id: id },
+      where: { language_id: id },
     });
     if (deleted) {
       return res.json({ message: "Language deleted successfully" });
