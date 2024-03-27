@@ -28,7 +28,7 @@ const Staff = sequelize.define(
     },
     email: {
       type: DataTypes.STRING(50),
-      defaultValue: null,
+      allowNull: true,
     },
     store_id: {
       type: DataTypes.TINYINT.UNSIGNED,

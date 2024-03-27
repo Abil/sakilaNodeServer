@@ -19,6 +19,7 @@ import actorAwardRoutes from "./routes/actorAward.js";
 import inventoryRoutes from "./routes/inventory.js";
 import rentalRoutes from "./routes/rental.js";
 import paymentRoutes from "./routes/payment.js";
+import authRoutes from "./routes/auth.js";
 
 import sequelize from "./utils/db.js";
 import { associateModels } from "./models/associations.js";
@@ -64,6 +65,7 @@ const initializeApp = async () => {
   app.use("/api/inventory", inventoryRoutes);
   app.use("/api/rental", rentalRoutes);
   app.use("/api/payment", paymentRoutes);
+  app.use("/api/auth", authRoutes);
 
   // Ping Test
   app.get("/ping", (req, res) => {

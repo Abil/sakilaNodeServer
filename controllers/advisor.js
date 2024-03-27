@@ -11,7 +11,7 @@ import Advisor from "../models/advisor.js"; // Import your Sequelize Advisor mod
 // };
 
 // Get all advisors with pagination
-export const getAllAdvisors = async (req, res) => {
+const getAllAdvisors = async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
   const offset = (page - 1) * pageSize;
 

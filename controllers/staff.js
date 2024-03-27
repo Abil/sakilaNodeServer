@@ -45,6 +45,7 @@ export const getAllStaff = async (req, res) => {
     const { count, rows } = await Staff.findAndCountAll({
       offset,
       limit: Number(pageSize),
+      attributes: { exclude: ["password"] },
       include: [
         {
           model: Store,

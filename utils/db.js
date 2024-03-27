@@ -1,9 +1,17 @@
+import dotenv from "dotenv";
 import { Sequelize } from "sequelize";
 
-const sequelize = new Sequelize("mavenmovies", "root", "ellipsis8", {
-  host: "localhost",
-  dialect: "mysql",
-});
+dotenv.config();
+
+const sequelize = new Sequelize(
+  "mavenmovies",
+  "root",
+  process.env.DB_PASSWORD,
+  {
+    host: "localhost",
+    dialect: "mysql",
+  }
+);
 
 //module.exports.default = sequelize;
 export default sequelize;

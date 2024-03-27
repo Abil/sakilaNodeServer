@@ -24,7 +24,7 @@ const createActor = async (req, res) => {
 // };
 
 // Get all actors with pagination
-export const getAllActors = async (req, res) => {
+const getAllActors = async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
   const offset = (page - 1) * pageSize;
 
