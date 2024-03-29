@@ -122,7 +122,7 @@ export const getInventoryInStock = async (req, res) => {
     const offset = (page - 1) * limit;
 
     // Query the database to find inventory that is not currently rented out
-    const inventory = await Inventory.findAndCountAll({
+    const inventories = await Inventory.findAndCountAll({
       include: [
         {
           model: Rental,
@@ -133,13 +133,23 @@ export const getInventoryInStock = async (req, res) => {
           },
           required: false, // Use left join to include rentals without matching inventory_id
         },
+
+        {
+          model: Film,
+        },
       ],
       limit: limit,
       offset: offset,
     });
 
     // Send the response with the found inventory
-    res.json(inventory);
+    //res.json(inventory);
+    res.json({
+      total: inventories.count,
+      totalPages: Math.ceil(inventories.count / limit),
+      currentPage: page,
+      inventories: inventories.rows,
+    });
   } catch (error) {
     // If an error occurs, send an error response
     console.error("Error fetching inventory:", error);

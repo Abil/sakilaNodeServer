@@ -87,6 +87,17 @@ export const getUnreturnedRentals = async (req, res) => {
           [Op.is]: null, // Rentals without a return date
         },
       },
+      include: [
+        {
+          model: Inventory,
+          as: "inventory",
+          include: [
+            {
+              model: Film,
+            },
+          ],
+        },
+      ],
       offset,
       limit,
     });
