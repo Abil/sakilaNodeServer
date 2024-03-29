@@ -1,9 +1,12 @@
+import { Op } from "sequelize";
+
 import Inventory from "../models/inventory.js";
 import Film from "../models/film.js";
 import Store from "../models/store.js";
 import Address from "../models/address.js";
 import City from "../models/city.js";
 import Country from "../models/country.js";
+import Rental from "../models/rental.js";
 
 // Get all inventories
 // export const getAllInventories = async (req, res) => {
@@ -107,6 +110,40 @@ export const getInventory = async (req, res) => {
   } catch (error) {
     console.error("Error fetching inventory item:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get inventory item by inventory ID
+export const getInventoryInStock = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Default page 1
+    const limit = parseInt(req.query.limit) || 10; // Default limit 10
+
+    const offset = (page - 1) * limit;
+
+    // Query the database to find inventory that is not currently rented out
+    const inventory = await Inventory.findAndCountAll({
+      include: [
+        {
+          model: Rental,
+          where: {
+            return_date: {
+              [Op.eq]: null,
+            },
+          },
+          required: false, // Use left join to include rentals without matching inventory_id
+        },
+      ],
+      limit: limit,
+      offset: offset,
+    });
+
+    // Send the response with the found inventory
+    res.json(inventory);
+  } catch (error) {
+    // If an error occurs, send an error response
+    console.error("Error fetching inventory:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

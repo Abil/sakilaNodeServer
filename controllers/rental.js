@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Store from "../models/store.js";
 import Address from "../models/address.js";
 import City from "../models/city.js";
@@ -69,6 +71,35 @@ export const getRental = async (req, res) => {
   } catch (error) {
     console.error("Error fetching rental:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get rentals that have not been returned yet
+export const getUnreturnedRentals = async (req, res) => {
+  try {
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const offset = (page - 1) * limit;
+
+    const rentals = await Rental.findAndCountAll({
+      where: {
+        return_date: {
+          [Op.is]: null, // Rentals without a return date
+        },
+      },
+      offset,
+      limit,
+    });
+
+    res.json({
+      total: rentals.count,
+      totalPages: Math.ceil(rentals.count / limit),
+      currentPage: page,
+      rentals: rentals.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching rentals:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
