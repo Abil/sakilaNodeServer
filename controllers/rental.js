@@ -103,7 +103,7 @@ export const getUnreturnedRentals = async (req, res) => {
     });
 
     res.json({
-      total: rentals.count,
+      totalItems: rentals.count,
       totalPages: Math.ceil(rentals.count / limit),
       currentPage: page,
       rentals: rentals.rows,

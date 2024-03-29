@@ -145,7 +145,7 @@ export const getInventoryInStock = async (req, res) => {
     // Send the response with the found inventory
     //res.json(inventory);
     res.json({
-      total: inventories.count,
+      totalItems: inventories.count,
       totalPages: Math.ceil(inventories.count / limit),
       currentPage: page,
       inventories: inventories.rows,
