@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Country from "../models/country.js";
 
 export const createCountry = async (req, res) => {
@@ -43,6 +45,22 @@ export const getAllCountries = async (req, res) => {
   } catch (error) {
     console.error("Error fetching all countries:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Search countries
+export const searchCountries = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const countries = await Country.findAll({
+      where: {
+        country: { [Op.like]: `%${query}%` },
+      },
+    });
+    res.json(countries);
+  } catch (error) {
+    console.error("Error searching countries:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
