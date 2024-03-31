@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Store from "../models/store.js";
 import Address from "../models/address.js";
 import City from "../models/city.js";
@@ -149,5 +151,44 @@ export const getStoreById = async (req, res) => {
   } catch (error) {
     console.error("Error fetching store by ID:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Search store
+export const searchStore = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    // Find the address that matches the search query
+    const addresses = await Address.findAll({
+      where: {
+        // [Op.or]: [
+        //   { street: { [Op.like]: `%${query}%` } },
+        //   { city: { [Op.like]: `%${query}%` } },
+        //   { state: { [Op.like]: `%${query}%` } },
+        //   { country: { [Op.like]: `%${query}%` } },
+        //   // Add more fields if needed for search
+        // ],
+        address: { [Op.like]: `%${query}%` },
+      },
+    });
+
+    // Extract the address IDs from the search results
+    const addressIds = addresses.map((address) => address.address_id);
+
+    // Find stores linked to the matched addresses
+    const stores = await Store.findAll({
+      where: {
+        address_id: {
+          [Op.in]: addressIds,
+        },
+      },
+      include: [{ model: Address }],
+    });
+
+    res.json(stores);
+  } catch (error) {
+    console.error("Error searching stores by address:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

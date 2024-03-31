@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Film from "../models/film.js";
 import Language from "../models/language.js";
 import Category from "../models/category.js";
@@ -73,6 +75,22 @@ export const getFilmById = async (req, res) => {
   } catch (error) {
     console.error("Error fetching film by ID:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Search films
+export const searchFilms = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const films = await Film.findAll({
+      where: {
+        title: { [Op.like]: `%${query}%` },
+      },
+    });
+    res.json(films);
+  } catch (error) {
+    console.error("Error searching films:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

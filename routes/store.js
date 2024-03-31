@@ -7,12 +7,16 @@ import {
   createNewStore,
   updateStore,
   deleteStore,
+  searchStore,
 } from "../controllers/store.js";
 
 const router = express.Router();
 
 // GET all stores
 router.get("/", getAllStores);
+
+// GET store by ID
+router.get("/search", searchStore);
 
 // GET store by ID
 router.get("/:storeId", getStoreById);

@@ -7,12 +7,16 @@ import {
   createNewFilm,
   updateFilm,
   deleteFilm,
+  searchFilms,
 } from "../controllers/film.js";
 
 const router = express.Router();
 
 // GET all films
 router.get("/", getAllFilms);
+
+// Search Film
+router.get("/search", searchFilms);
 
 // GET film by ID
 router.get("/:filmId", getFilmById);
