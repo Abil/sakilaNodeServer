@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Address from "../models/address.js";
 import City from "../models/city.js";
 import Country from "../models/country.js";
@@ -79,6 +81,22 @@ export const getAddressById = async (req, res) => {
     res.json(address);
   } catch (error) {
     console.error("Error fetching address by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Search address
+export const searchAddress = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const addresses = await Address.findAll({
+      where: {
+        address: { [Op.like]: `%${query}%` },
+      },
+    });
+    res.json(addresses);
+  } catch (error) {
+    console.error("Error searching address:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
