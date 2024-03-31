@@ -50,7 +50,7 @@ export const getAllCities = async (req, res) => {
   }
 };
 
-// Search countries
+// Search cities
 export const searchCities = async (req, res) => {
   try {
     const { query } = req.query;

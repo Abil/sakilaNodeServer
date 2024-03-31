@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Language from "../models/language.js";
 
 export const createLanguage = async (req, res) => {
@@ -43,6 +45,22 @@ export const getAllLanguages = async (req, res) => {
   } catch (error) {
     console.error("Error fetching all languages:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Search languages
+export const searchLanguages = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const languages = await Language.findAll({
+      where: {
+        name: { [Op.like]: `%${query}%` },
+      },
+    });
+    res.json(languages);
+  } catch (error) {
+    console.error("Error searching languages:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
