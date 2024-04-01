@@ -52,6 +52,39 @@ const getAllActors = async (req, res) => {
 };
 
 // Get all actors with pagination
+const getAllActorsWithAwards = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
+  try {
+    const actors = await ActorAward.findAll({
+      where: { actor_id: { [Op.not]: null } },
+    });
+    // Extract the actor IDs from the search results
+    const actorIds = actors.map((actor) => actor.actor_id);
+
+    const { count, rows } = await Actor.findAndCountAll({
+      offset,
+      limit: Number(pageSize),
+      where: { actor_id: { [Op.in]: actorIds } },
+    });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      actors: rows,
+    });
+  } catch (error) {
+    console.error("Error fetching all actors:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get all actors with pagination
 const searchActorsWithoutAwards = async (req, res) => {
   const { first_name, last_name } = req.query;
   try {
@@ -153,4 +186,5 @@ export {
   updateActor,
   getActorById,
   searchActorsWithoutAwards,
+  getAllActorsWithAwards,
 };
