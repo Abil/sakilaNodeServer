@@ -85,9 +85,11 @@ export const associateModels = () => {
     //Done to fetch award data from actor award into Actor
     Actor.belongsTo(ActorAward, {
       foreignKey: "actor_id",
+      targetKey: "actor_id",
     });
     ActorAward.hasMany(Actor, {
       foreignKey: "actor_id",
+      sourceKey: "actor_id",
     });
 
     Inventory.belongsTo(Film, { foreignKey: "film_id" });

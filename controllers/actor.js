@@ -67,6 +67,7 @@ const getAllActorsWithAwards = async (req, res) => {
       offset,
       limit: Number(pageSize),
       where: { actor_id: { [Op.in]: actorIds } },
+      include: [{ model: ActorAward }],
     });
 
     const totalPages = Math.ceil(count / pageSize);
@@ -114,7 +115,7 @@ const searchActorsWithoutAwards = async (req, res) => {
     // Find actors not linked to the actor awards
     const actorsWithoutAwards = await Actor.findAll({
       where: searchCriteria,
-      //include: [{ model: ActorAward }],
+      //include: [{ model: ActorAward, attributes: ["awards"] }],
     });
 
     res.json(actorsWithoutAwards);
