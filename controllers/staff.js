@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Store from "../models/store.js";
 import Address from "../models/address.js";
 import City from "../models/city.js";
@@ -57,6 +59,16 @@ export const getAllStaff = async (req, res) => {
           ],
         },
         {
+          model: Store,
+          //as: "normal_staff",
+          include: [
+            {
+              model: Address,
+              include: [{ model: City, include: [{ model: Country }] }],
+            },
+          ],
+        },
+        {
           model: Address,
           include: [
             {
@@ -95,7 +107,7 @@ export const getStaffById = async (req, res) => {
           include: [
             {
               model: Address,
-              include: [{ model: City, include: [{ model: Country }] }],
+              //include: [{ model: City, include: [{ model: Country }] }],
             },
           ],
         },
@@ -120,9 +132,50 @@ export const getStaffById = async (req, res) => {
   }
 };
 
+// Get all staff
+export const searchStaff = async (req, res) => {
+  const { first_name, last_name } = req.query;
+  try {
+    let searchCriteria = {};
+
+    // Include optional search criteria based on provided query parameters
+    if (first_name) {
+      searchCriteria.first_name = { [Op.like]: `%${first_name}%` };
+    }
+    if (last_name) {
+      searchCriteria.last_name = { [Op.like]: `%${last_name}%` };
+    }
+
+    // const actors = await ActorAward.findAll({
+    //   where: { actor_id: { [Op.not]: null } },
+    // });
+
+    // // Extract the actor IDs from the search results
+    // const actorIds = actors.map((actor) => actor.actor_id);
+
+    // searchCriteria.actor_id = {
+    //   [Op.notIn]: actorIds,
+    // };
+
+    console.log("search criteria:", searchCriteria);
+
+    // Find actors not linked to the actor awards
+    const staff = await Staff.findAll({
+      where: searchCriteria,
+      //include: [{ model: ActorAward, attributes: ["awards"] }],
+    });
+
+    res.json(staff);
+  } catch (error) {
+    console.error("Error searching staff:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // Create a new staff
 export const createNewStaff = async (req, res) => {
-  const { first_name, last_name, address_id, store_id, username } = req.body;
+  const { first_name, last_name, address_id, store_id, username, email } =
+    req.body;
   try {
     const newStaff = await Staff.create({
       first_name,
@@ -130,6 +183,7 @@ export const createNewStaff = async (req, res) => {
       address_id,
       store_id,
       username,
+      email,
     });
     res.status(201).json(newStaff);
   } catch (error) {
@@ -141,19 +195,29 @@ export const createNewStaff = async (req, res) => {
 // Update an existing staff
 export const updateStaff = async (req, res) => {
   const { staffId } = req.params;
-  const { first_name, last_name, address_id, store_id, username } = req.body;
+  const { first_name, last_name, address_id, store_id, username, email } =
+    req.body;
   try {
     const staff = await Staff.findByPk(staffId);
     if (!staff) {
       return res.status(404).json({ error: "Staff not found" });
     }
-    staff.first_name = first_name;
-    staff.last_name = last_name;
-    staff.address_id = address_id;
-    staff.store_id = store_id;
-    staff.username = username;
+
+    first_name
+      ? (staff.first_name = first_name)
+      : (staff.first_name = staff.first_name);
+    last_name
+      ? (staff.last_name = last_name)
+      : (staff.last_name = staff.last_name);
+    address_id
+      ? (staff.address_id = address_id)
+      : (staff.address_id = staff.address_id);
+    store_id ? (staff.store_id = store_id) : (staff.store_id = staff.store_id);
+    username ? (staff.username = username) : (staff.username = staff.username);
+    email ? (staff.email = email) : (staff.email = staff.email);
 
     await staff.save();
+
     res.json(staff);
   } catch (error) {
     console.error("Error updating staff:", error);
@@ -174,5 +238,43 @@ export const deleteStaff = async (req, res) => {
   } catch (error) {
     console.error("Error deleting staff:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get all actors with pagination
+export const nonManagerStaff = async (req, res) => {
+  const { first_name, last_name } = req.query;
+  try {
+    let searchCriteria = {};
+
+    //Include optional search criteria based on provided query parameters
+    if (first_name) {
+      searchCriteria.first_name = { [Op.like]: `%${first_name}%` };
+    }
+    if (last_name) {
+      searchCriteria.last_name = { [Op.like]: `%${last_name}%` };
+    }
+
+    const stores = await Store.findAll();
+
+    // Extract the actor IDs from the search results
+    const managers = stores.map((store) => store.manager_staff_id);
+
+    searchCriteria.staff_id = {
+      [Op.notIn]: managers,
+    };
+
+    console.log("search criteria:", searchCriteria);
+
+    // Find actors not linked to the actor awards
+    const nonManagerStaff = await Staff.findAll({
+      where: searchCriteria,
+      //include: [{ model: ActorAward, attributes: ["awards"] }],
+    });
+
+    res.json(nonManagerStaff);
+  } catch (error) {
+    console.error("Error fetching actors without awards:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

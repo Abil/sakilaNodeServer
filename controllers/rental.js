@@ -77,17 +77,19 @@ export const getRental = async (req, res) => {
 // Get rentals that have not been returned yet
 export const getUnreturnedRentals = async (req, res) => {
   try {
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
-    const offset = (page - 1) * limit;
+    // const page = req.query.page ? parseInt(req.query.page) : 1;
+    // const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    // const offset = (page - 1) * limit;
 
-    const rentals = await Rental.findAndCountAll({
+    //const rentals = await Rental.findAndCountAll({
+    const rentals = await Rental.findAll({
       where: {
         return_date: {
           [Op.is]: null, // Rentals without a return date
         },
       },
       include: [
+        { model: Customer },
         {
           model: Inventory,
           as: "inventory",
@@ -98,16 +100,17 @@ export const getUnreturnedRentals = async (req, res) => {
           ],
         },
       ],
-      offset,
-      limit,
+      // offset,
+      // limit,
     });
 
-    res.json({
-      totalItems: rentals.count,
-      totalPages: Math.ceil(rentals.count / limit),
-      currentPage: page,
-      rentals: rentals.rows,
-    });
+    // res.json({
+    //   totalItems: rentals.count,
+    //   totalPages: Math.ceil(rentals.count / limit),
+    //   currentPage: page,
+    //   rentals: rentals.rows,
+    // });
+    res.json(rentals);
   } catch (error) {
     console.error("Error fetching rentals:", error);
     res.status(500).json({ error: "Internal server error" });

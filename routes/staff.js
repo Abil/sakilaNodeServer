@@ -7,12 +7,20 @@ import {
   createNewStaff,
   updateStaff,
   deleteStaff,
+  searchStaff,
+  nonManagerStaff,
 } from "../controllers/staff.js";
 
 const router = express.Router();
 
 // GET all staff
 router.get("/", getAllStaff);
+
+// Non manager Staff
+router.get("/notmanager", nonManagerStaff);
+
+// Search staff
+router.get("/search", searchStaff);
 
 // GET staff by ID
 router.get("/:staffId", getStaffById);

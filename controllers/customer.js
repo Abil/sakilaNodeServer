@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Customer from "../models/customer.js";
 import Store from "../models/store.js";
 import Address from "../models/address.js";
@@ -206,5 +208,45 @@ export const deleteCustomer = async (req, res) => {
   } catch (error) {
     console.error("Error deleting customer:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get all staff
+export const searchCustomer = async (req, res) => {
+  const { first_name, last_name } = req.query;
+  try {
+    let searchCriteria = {};
+
+    // Include optional search criteria based on provided query parameters
+    if (first_name) {
+      searchCriteria.first_name = { [Op.like]: `%${first_name}%` };
+    }
+    if (last_name) {
+      searchCriteria.last_name = { [Op.like]: `%${last_name}%` };
+    }
+
+    // const actors = await ActorAward.findAll({
+    //   where: { actor_id: { [Op.not]: null } },
+    // });
+
+    // // Extract the actor IDs from the search results
+    // const actorIds = actors.map((actor) => actor.actor_id);
+
+    // searchCriteria.actor_id = {
+    //   [Op.notIn]: actorIds,
+    // };
+
+    console.log("search criteria:", searchCriteria);
+
+    // Find actors not linked to the actor awards
+    const customer = await Customer.findAll({
+      where: searchCriteria,
+      include: [{ model: Address, attributes: ["address"] }],
+    });
+
+    res.json(customer);
+  } catch (error) {
+    console.error("Error searching customer:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

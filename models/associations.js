@@ -26,9 +26,14 @@ export const associateModels = () => {
     Country.hasMany(City, { foreignKey: "country_id" });
 
     //Association between address, store and staff
-    Store.belongsTo(Staff, { foreignKey: "manager_staff_id" });
+    //Store.belongsTo(Staff, { foreignKey: "manager_staff_id" });
+
     //Every staff entry has only one store entry associated (one to one)
-    Staff.hasOne(Store, { foreignKey: "manager_staff_id" });
+    //Staff.hasOne(Store, { foreignKey: "manager_staff_id" });
+
+    Staff.belongsTo(Store, { foreignKey: "store_id" });
+    Store.hasMany(Staff, { foreignKey: "store_id" });
+
     Store.belongsTo(Address, { foreignKey: "address_id" });
     //Every address entry has only one store entry associated (one to one)
     Address.hasOne(Store, { foreignKey: "address_id" });

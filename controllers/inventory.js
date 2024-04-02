@@ -116,10 +116,14 @@ export const getInventory = async (req, res) => {
 // Get inventory item by inventory ID
 export const getInventoryInStock = async (req, res) => {
   try {
+    const { query = "A" } = req.query;
+
     const page = parseInt(req.query.page) || 1; // Default page 1
     const limit = parseInt(req.query.limit) || 10; // Default limit 10
 
     const offset = (page - 1) * limit;
+
+    const currentDate = new Date();
 
     // Query the database to find inventory that is not currently rented out
     const inventories = await Inventory.findAndCountAll({
@@ -127,15 +131,24 @@ export const getInventoryInStock = async (req, res) => {
         {
           model: Rental,
           where: {
+            // return_date: {
+            //   [Op.eq]: null,
+            // },
             return_date: {
-              [Op.eq]: null,
+              [Op.lt]: currentDate,
+              //[Op.gt]: currentDate,
             },
           },
-          required: false, // Use left join to include rentals without matching inventory_id
+          //required: false, // Use left join to include rentals without matching inventory_id
         },
 
         {
           model: Film,
+          where: {
+            title: {
+              [Op.like]: `%${query}%`, // Assuming filmName is the search query
+            },
+          },
         },
       ],
       limit: limit,

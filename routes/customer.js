@@ -7,12 +7,16 @@ import {
   createNewCustomer,
   updateCustomer,
   deleteCustomer,
+  searchCustomer,
 } from "../controllers/customer.js";
 
 const router = express.Router();
 
 // GET all customers
 router.get("/", getAllCustomers);
+
+// Search customer
+router.get("/search", searchCustomer);
 
 // GET customer by ID
 router.get("/:customerId", getCustomerById);
