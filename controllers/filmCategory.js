@@ -40,7 +40,7 @@ export const getAllCategoriesForFilm = async (req, res) => {
         {
           model: Category,
           as: "category",
-          attributes: ["name"],
+          attributes: ["name", "category_id"],
         },
       ],
     });

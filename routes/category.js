@@ -7,6 +7,7 @@ import {
   getCategoryById,
   updateCategory,
   deleteCategory,
+  searchCategories,
 } from "../controllers/category.js";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const router = express.Router();
 // Routes for CRUD operations on categories
 router.post("/", isAdmin, createCategory); // Create a new category
 router.get("/", getAllCategories); // Get all categories
+router.get("/search", searchCategories); // Search categories
 router.get("/:id", getCategoryById); // Get category by ID
 router.put("/:id", isAdmin, updateCategory); // Update category by ID
 router.delete("/:id", isAdmin, deleteCategory); // Delete category by ID

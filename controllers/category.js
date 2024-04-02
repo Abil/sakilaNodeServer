@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import Category from "../models/category.js";
 
 export const createCategory = async (req, res) => {
@@ -56,6 +58,22 @@ export const getCategoryById = async (req, res) => {
     res.json(category);
   } catch (error) {
     console.error("Error fetching category by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Search category
+export const searchCategories = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const categories = await Category.findAll({
+      where: {
+        name: { [Op.like]: `%${query}%` },
+      },
+    });
+    res.json(categories);
+  } catch (error) {
+    console.error("Error searching countries:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

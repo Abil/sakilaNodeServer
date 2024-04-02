@@ -87,7 +87,7 @@ export const getAllActorsForFilm = async (req, res) => {
         {
           model: Actor,
           as: "actor",
-          attributes: ["first_name", "last_name"],
+          attributes: ["actor_id", "first_name", "last_name"],
         },
       ],
     });
