@@ -1,5 +1,12 @@
 import express from "express";
 import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+import rfs from "rotating-file-stream";
+
+//Just for the sake of user_id in morgan logs
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 import actorRoutes from "./routes/actor.js";
 import addressRoutes from "./routes/address.js";
@@ -20,10 +27,19 @@ import inventoryRoutes from "./routes/inventory.js";
 import rentalRoutes from "./routes/rental.js";
 import paymentRoutes from "./routes/payment.js";
 import authRoutes from "./routes/auth.js";
-
+import reportRoutes from "./routes/report.js";
 import sequelize from "./utils/db.js";
 import { associateModels } from "./models/associations.js";
 import { requireSignin } from "./middlewares/auth.js";
+
+//.env config
+dotenv.config();
+
+//As we are using modules, __dirname will not work
+//Code ti fix it
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 const app = express();
 const port = 8000;
@@ -43,9 +59,35 @@ const initializeApp = async () => {
     console.error("Error in Sequelize Sync: ", err);
   }
 
+  // Custom morgan format
+  morgan.token("authHeader", function (req) {
+    //return req.headers["authorization"] || "-";
+
+    if (!req.headers.authorization) {
+      return "No Auth";
+    }
+    const decoded = jwt.verify(
+      req.headers.authorization,
+      process.env.JWT_SECRET
+    );
+
+    return `User ID: ${decoded._id}`;
+  });
+
+  const customFormat =
+    ':remote-addr [:date[iso]] ":method :url" :status :response-time ms :authHeader';
+
+  // create a rotating write stream
+  var accessLogStream = rfs.createStream("access.log", {
+    interval: "1d", // rotate daily
+    path: path.join(__dirname, "log"),
+  });
+
   // Middlewares
   app.use(cors());
   app.use(express.json());
+  // Log HTTP requests and responses using custom format
+  app.use(morgan(customFormat, { stream: accessLogStream }));
 
   // Router Middleware
   app.use("/api/actor", requireSignin, actorRoutes);
@@ -67,6 +109,7 @@ const initializeApp = async () => {
   app.use("/api/rental", requireSignin, rentalRoutes);
   app.use("/api/payment", requireSignin, paymentRoutes);
   app.use("/api/auth", authRoutes);
+  app.use("/api/report", requireSignin, reportRoutes);
 
   // Ping Test
   app.get("/ping", (req, res) => {

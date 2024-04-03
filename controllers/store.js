@@ -40,6 +40,7 @@ export const getAllStores = async (req, res) => {
 
   try {
     const { count, rows } = await Store.findAndCountAll({
+      //attributes: ['first_name', 'last_name', 'email', 'store_id'],
       offset,
       limit: Number(pageSize),
       include: [
