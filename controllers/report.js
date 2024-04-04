@@ -288,8 +288,11 @@ export const storesDetails = async (req, res) => {
 
 //Inventory Details
 export const inventoryDetails = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const inventories = await Inventory.findAll({
+    const { count, rows } = await Inventory.findAndCountAll({
       include: [
         {
           model: Film,
@@ -302,8 +305,19 @@ export const inventoryDetails = async (req, res) => {
         },
       ],
       attributes: ["store_id", "inventory_id"],
+      offset,
+      limit: Number(pageSize),
     });
-    res.json(inventories);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      inventories: rows,
+    });
   } catch (error) {
     console.error("Error fetching inventories:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -383,8 +397,11 @@ export const filmReplacementCostByStoreAndCategory = async (req, res) => {
 };
 
 export const getCustomersWithDetails = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
-    const customers = await Customer.findAll({
+    const { count, rows } = await Customer.findAndCountAll({
       attributes: ["first_name", "last_name", "store_id", "active"],
       include: [
         {
@@ -404,9 +421,19 @@ export const getCustomersWithDetails = async (req, res) => {
           ],
         },
       ],
+      offset,
+      limit: Number(pageSize),
     });
 
-    res.json(customers);
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      customers: rows,
+    });
   } catch (error) {
     console.error("Error fetching customers:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -414,6 +441,9 @@ export const getCustomersWithDetails = async (req, res) => {
 };
 
 export const getCustomerRentalDetails = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+
   try {
     //For some reason group by os joins is not working
     //Same error as above
@@ -464,9 +494,21 @@ export const getCustomerRentalDetails = async (req, res) => {
 
         ORDER BY 
             SUM(payment.amount) DESC
+        LIMIT ${Number(pageSize)}
+        OFFSET ${offset}    
             ;`);
 
-    res.json(customers);
+    const totalCount = await Customer.count();
+
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    res.json({
+      totalItems: totalCount,
+      totalPages,
+      currentPage: page,
+      pageSize,
+      customers,
+    });
   } catch (error) {
     console.error("Error fetching customer rental details:", error);
     res.status(500).json({ error: "Internal server error" });
