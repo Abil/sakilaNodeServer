@@ -11,10 +11,15 @@ import {
   login,
   updateProfile,
   deleteUser,
+  googleLogin,
+  googleCallback,
 } from "../controllers/auth.js";
 
 router.post("/register", register);
 router.post("/login", login);
+
+router.get("/google", googleLogin);
+router.get("/google/callback", googleCallback);
 
 router.get("/auth-check", requireSignin, (req, res) => {
   res.json({ ok: true });

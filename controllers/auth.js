@@ -1,9 +1,24 @@
-import User from "../models/user.js";
-import { hashPassword, comparePassword } from "../utils/auth.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { OAuth2Client } from "google-auth-library";
+
+import User from "../models/user.js";
+import { hashPassword, comparePassword } from "../utils/auth.js";
 
 dotenv.config();
+
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REDIRECT_URI = "http://127.0.0.1:8000/api/auth/google/callback";
+
+//const JWT_SECRET = process.env.JWT_SECRET;
+
+//const googleClient = new OAuth2Client(CLIENT_ID);
+const googleClient = new OAuth2Client({
+  clientId: CLIENT_ID,
+  clientSecret: CLIENT_SECRET,
+  redirectUri: REDIRECT_URI,
+});
 
 export const register = async (req, res) => {
   try {
@@ -143,5 +158,79 @@ export const deleteUser = async (req, res) => {
   } catch (error) {
     console.error("Error deleting user:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const googleLogin = async (req, res) => {
+  try {
+    const url = googleClient.generateAuthUrl({
+      access_type: "offline",
+      scope: ["email", "profile"], // Scopes for accessing user's email and profile info
+      redirect_uri: REDIRECT_URI,
+    });
+    //console.log("redirect url: ", url);
+    res.json({ google_redirection_url: url });
+  } catch (error) {
+    console.log("error in google login: ", error);
+  }
+};
+
+export const googleCallback = async (req, res) => {
+  try {
+    const { code } = req.query;
+    const { tokens } = await googleClient.getToken(code);
+    //console.log("Tokens: ", tokens);
+
+    // Verify and decode the id token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    //const userId = payload["sub"];
+    const email = payload["email"];
+    const name = payload["name"];
+
+    // console.log("Sub: ", userId);
+    // console.log("Email:", email);
+    // console.log("Name:", name);
+
+    const existingUser = await User.findOne({
+      where: { email },
+    });
+    if (existingUser) {
+      const token = jwt.sign({ _id: existingUser.id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
+      // res.json({
+      //   user: {
+      //     name: existingUser.name,
+      //     email: existingUser.email,
+      //     admin: existingUser.admin,
+      //   },
+      //   token,
+      // });
+
+      res.redirect(
+        `http://127.0.0.1:3000/auth/callback?name=${existingUser.name}&email=${existingUser.email}&admin=${existingUser.admin}&token=${token}`
+      );
+    } else {
+      const user = await User.create({
+        name,
+        email,
+      });
+
+      const token = jwt.sign({ _id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
+      res.redirect(
+        `http://127.0.0.1:3000/auth/callback?name=${user.name}&email=${user.email}&admin=${user.admin}&token=${token}`
+      );
+    }
+  } catch (error) {
+    console.log("Error in google callback: ", error);
   }
 };

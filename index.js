@@ -66,12 +66,17 @@ const initializeApp = async () => {
     if (!req.headers.authorization) {
       return "No Auth";
     }
-    const decoded = jwt.verify(
-      req.headers.authorization,
-      process.env.JWT_SECRET
-    );
 
-    return `User ID: ${decoded._id}`;
+    try {
+      const decoded = jwt.verify(
+        req.headers.authorization,
+        process.env.JWT_SECRET
+      );
+
+      return `User ID: ${decoded._id}`;
+    } catch (err) {
+      return "Error in Morgan JWT Verfication";
+    }
   });
 
   const customFormat =
